@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskRequest;
 use App\Models\Task;
+use Illuminate\Support\Facades\Request;
 
 class TaskController extends Controller
 {
@@ -14,11 +15,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-//        $flights = Flight::where('active', 1)
-//            ->orderBy('name')
-//            ->take(10)
-//            ->get();
-        return Task::paginate(self::PAGE_SIZE);
+        $sort = Request::get("sort") ?? "username";
+        return Task::orderBy($sort)->paginate(self::PAGE_SIZE);
     }
 
     /**
