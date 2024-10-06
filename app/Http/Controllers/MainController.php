@@ -13,10 +13,11 @@ class MainController extends Controller
     public function index(Request $request): View
     {
         $page = $request->get("page") ?? "1";
-        $response = Http::get($request->getSchemeAndHttpHost() . "/api/tasks?page=$page");
+        $sort = $request->get("sort") ?? "username";
+        $response = Http::get($request->getSchemeAndHttpHost() . "/api/tasks?page=$page&sort=$sort");
         $tasks = json_decode($response->body());
         $tasks->links = $this->updateLinks($tasks->links);
-        return view('welcome', ['tasks' => $tasks]);
+        return view('welcome', ['tasks' => $tasks, 'sort' => $sort]);
     }
 
     public function create(Request $request): View

@@ -48,9 +48,9 @@
                                 <div class="mb-3">
                                     <label for="sortby" class="form-label">Sort By</label>
                                     <select class="form-select" name="sortby" id="sortby" aria-label="Default select example">
-                                        <option value="username" selected>User</option>
-                                        <option value="email">E-mail</option>
-                                        <option value="is_done">Status</option>
+                                        <option value="username" @if ($sort == 'username') selected @endif>User</option>
+                                        <option value="email" @if ($sort == 'email') selected @endif>E-mail</option>
+                                        <option value="is_done" @if ($sort == 'is_done') selected @endif>Status</option>
                                     </select>                                </div>
                                 <table class="table table-bordered table-dark">
                                     <thead>
@@ -118,7 +118,12 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#sortby').on('change', function() {
-            console.log( window.location );
+            const urlParams = new URLSearchParams(window.location.search);
+            let page = 1;
+            if (urlParams.has('page')) {
+                page = urlParams.get('page');
+            }
+            window.location.href = window.location.origin + '/?page=' + page + '&sort=' + this.value;
         });
     });
 </script>

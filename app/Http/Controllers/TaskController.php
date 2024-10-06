@@ -16,7 +16,9 @@ class TaskController extends Controller
     public function index()
     {
         $sort = Request::get("sort") ?? "username";
-        return Task::orderBy($sort)->paginate(self::PAGE_SIZE);
+        $tasks = Task::orderBy($sort)->paginate(self::PAGE_SIZE);;
+        $tasks->appends(['sort' => $sort]);
+        return $tasks;
     }
 
     /**
