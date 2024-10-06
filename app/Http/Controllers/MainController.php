@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -12,10 +13,42 @@ class MainController extends Controller
     public function index(Request $request): View
     {
         $page = $request->get("page") ?? "1";
-        $response = Http::get($request->url() . "/api/tasks?page=$page");
+        $response = Http::get($request->getSchemeAndHttpHost() . "/api/tasks?page=$page");
         $tasks = json_decode($response->body());
         $tasks->links = $this->updateLinks($tasks->links);
         return view('welcome', ['tasks' => $tasks]);
+    }
+
+    public function create(Request $request): View
+    {
+        $id = $request->get("id");
+        $params = ["id" => $id, "description" => null, "is_done" => null];
+        if ($id) {
+            $response = Http::get($request->getSchemeAndHttpHost() . "/api/tasks/$id");
+            $task = json_decode($response->body());
+            $params["description"] = $task->description;
+            $params["is_done"] = $task->is_done;
+        }
+        return view('edit', $params);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        Http::withBody(json_encode($request->getPayload()->all()), 'application/json')->post(
+            $request->getSchemeAndHttpHost() . "/api/tasks"
+        );
+        return redirect()->intended();
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $task = $request->getPayload()->all();
+        $task["is_done"] = $task["is_done"] == "on" ? 1 : 0;
+        $id = $task["id"];
+        Http::withBody(json_encode($task), 'application/json')->patch(
+            $request->getSchemeAndHttpHost() . "/api/tasks/$id"
+        );
+        return redirect()->intended();
     }
 
     private function updateLinks(array $links): array

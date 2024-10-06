@@ -20,4 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get("/edit", [MainController::class, "create"])->name("task.edit");
+Route::post("/edit", [MainController::class, "store"])->name("task.store");
+Route::patch("/edit", [MainController::class, "update"])->name("task.update");
+
 require __DIR__.'/auth.php';
